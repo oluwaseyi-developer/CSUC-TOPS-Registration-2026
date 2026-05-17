@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    border-color: theme('colors.white / 0.1');
+  }
+
+  body {
+    @apply bg-gradient-to-br from-primary-950 via-primary-900 to-primary-950 text-white antialiased;
+    min-height: 100vh;
+  }
+
+  ::selection {
+    @apply bg-gold-500 text-primary-950;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 
+           focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent
+           transition-all duration-300 ease-in-out;
+  }
+
+  .input-field:focus {
+    @apply bg-white/15;
+  }
+
+  .select-field {
+    @apply w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white
+           focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent
+           transition-all duration-300 ease-in-out appearance-none cursor-pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+  }
+
+  .select-field option {
+    @apply bg-primary-900 text-white;
+  }
+
+  .btn-primary {
+    @apply px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-600 text-primary-950 font-semibold rounded-xl
+           shadow-lg shadow-gold-500/25 hover:shadow-xl hover:shadow-gold-500/40
+           transform hover:-translate-y-0.5 active:translate-y-0
+           transition-all duration-300 ease-out
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-white/10 border border-white/30 text-white font-medium rounded-xl
+           hover:bg-white/20 hover:border-white/40
+           transition-all duration-300 ease-out;
+  }
+
+  .label-text {
+    @apply block text-sm font-medium text-white/90 mb-2;
+  }
+
+  .error-text {
+    @apply text-red-400 text-sm mt-1;
+  }
+
+  .radio-option {
+    @apply flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer
+           hover:bg-white/10 hover:border-white/20 transition-all duration-200;
+  }
+
+  .radio-option.selected {
+    @apply bg-gold-500/20 border-gold-400;
+  }
+
+  .floating-shapes {
+    @apply absolute inset-0 overflow-hidden pointer-events-none;
+  }
+
+  .floating-shape {
+    @apply absolute rounded-full bg-gradient-to-br from-gold-400/10 to-primary-400/10 blur-3xl;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-gold-300 via-gold-400 to-gold-500 bg-clip-text text-transparent;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Custom animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+}

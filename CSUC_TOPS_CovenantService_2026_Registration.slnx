@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CSUC.Registration.Api/CSUC.Registration.Api.csproj" />
+    <Project Path="src/CSUC.Registration.Application/CSUC.Registration.Application.csproj" />
+    <Project Path="src/CSUC.Registration.Domain/CSUC.Registration.Domain.csproj" />
+    <Project Path="src/CSUC.Registration.Infrastructure/CSUC.Registration.Infrastructure.csproj" />
+  </Folder>
+</Solution>

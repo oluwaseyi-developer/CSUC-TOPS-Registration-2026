@@ -1,0 +1,26 @@
+# Render.yaml - Render Blueprint Specification
+# Deploy to Render with PostgreSQL
+
+services:
+  - type: web
+    name: csuc-registration-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:80
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: csuc-registration-db
+          property: connectionString
+      - key: Cors__AllowedOrigins__0
+        sync: false
+    healthCheckPath: /health
+
+databases:
+  - name: csuc-registration-db
+    databaseName: csuc_registration
+    user: csuc_user
+    plan: free
