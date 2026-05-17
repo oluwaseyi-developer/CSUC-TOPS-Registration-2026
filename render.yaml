@@ -5,9 +5,8 @@ services:
   # Backend API
   - type: web
     name: csuc-registration-api
-    env: docker
+    runtime: docker
     dockerfilePath: ./Dockerfile
-    plan: free
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
@@ -29,13 +28,12 @@ services:
         sync: false  # Set manually to your frontend URL after deployment
     healthCheckPath: /api/registration/options
 
-  # Frontend Static Site
+  # Frontend Static Site (Free)
   - type: web
     name: csuc-registration-frontend
     env: static
     buildCommand: cd src/Frontend && npm ci && npm run build
     staticPublishPath: src/Frontend/dist
-    plan: free
     routes:
       - type: rewrite
         source: /*
@@ -48,4 +46,3 @@ databases:
   - name: csuc-registration-db
     databaseName: csuc_registration
     user: csuc_user
-    plan: free
