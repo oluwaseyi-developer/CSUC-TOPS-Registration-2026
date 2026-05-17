@@ -130,6 +130,11 @@ export const adminApi = {
   deleteRegistration: async (id: string): Promise<void> => {
     await api.delete(`/admin/registrations/${id}`);
   },
+
+  importRegistrations: async (registrations: Registrant[]): Promise<number> => {
+    const { data } = await api.post<ApiResponse<number>>('/admin/import', registrations);
+    return data.data!;
+  },
 };
 
 export default api;

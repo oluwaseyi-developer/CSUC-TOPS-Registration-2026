@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BarChart3, Users, Church, FileSpreadsheet, LogOut } from 'lucide-react';
+import { ArrowLeft, BarChart3, Users, Church, FileSpreadsheet, LogOut, Download, Upload } from 'lucide-react';
 import { StatisticsCards, RegistrationsTable } from '@/components/admin';
 import { Button } from '@/components/ui';
 import { adminApi, authApi } from '@/api';
@@ -97,6 +97,41 @@ export function AdminPage() {
     }
   };
 
+  const handleExportBackup = async () => {
+    try {
+      const registrations = await adminApi.getAllRegistrations();
+      const json = JSON.stringify(registrations, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `registrations_backup_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('Backup exported successfully!');
+    } catch {
+      toast.error('Failed to export backup');
+    }
+  };
+
+  const handleImportBackup = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const registrations = JSON.parse(text);
+      const response = await adminApi.importRegistrations(registrations);
+      toast.success(`Imported ${response} registrations successfully!`);
+      window.location.reload();
+    } catch {
+      toast.error('Failed to import backup. Make sure the file is valid JSON.');
+    }
+    event.target.value = '';
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background Effects */}
@@ -150,10 +185,26 @@ export function AdminPage() {
                   Anniversary & Covenant Service 2026 • June 17-21
                 </p>
               </div>
-              <Button variant="secondary" onClick={handleExportExcel} className="gap-2">
-                <FileSpreadsheet className="w-4 h-4" />
-                <span>Export to Excel</span>
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="secondary" onClick={handleExportExcel} className="gap-2">
+                  <FileSpreadsheet className="w-4 h-4" />
+                  <span>Export Excel</span>
+                </Button>
+                <Button variant="secondary" onClick={handleExportBackup} className="gap-2">
+                  <Download className="w-4 h-4" />
+                  <span>Backup JSON</span>
+                </Button>
+                <label className="btn-secondary px-6 py-3 rounded-xl cursor-pointer flex items-center gap-2 hover:bg-white/20 transition-all">
+                  <Upload className="w-4 h-4" />
+                  <span>Import</span>
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={handleImportBackup}
+                    className="hidden"
+                  />
+                </label>
+              </div>
             </motion.header>
 
             {/* Statistics Section */}

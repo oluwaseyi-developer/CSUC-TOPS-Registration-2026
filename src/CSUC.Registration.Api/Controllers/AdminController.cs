@@ -3,6 +3,7 @@ using CSUC.Registration.Api.Contracts.Requests;
 using CSUC.Registration.Api.Contracts.Responses;
 using CSUC.Registration.Api.Extensions;
 using CSUC.Registration.Application.Features.Registrations.Commands.DeleteRegistration;
+using CSUC.Registration.Application.Features.Registrations.Commands.ImportRegistrations;
 using CSUC.Registration.Application.Features.Registrations.DTOs;
 using CSUC.Registration.Application.Features.Registrations.Queries.GetAllRegistrants;
 using CSUC.Registration.Application.Features.Registrations.Queries.GetRegistrantById;
@@ -86,5 +87,39 @@ public sealed class AdminController : ControllerBase
     {
         var result = await _mediator.Send(new GetRegistrationStatisticsQuery(), cancellationToken);
         return Ok(ApiResponse<RegistrationStatisticsDto>.SuccessResponse(result));
+    }
+
+    /// <summary>
+    /// Export all registrations as JSON for backup.
+    /// </summary>
+    [HttpGet("export")]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ExportData(CancellationToken cancellationToken)
+    {
+        var registrations = await _mediator.Send(new GetAllRegistrantsQuery(), cancellationToken);
+        var json = System.Text.Json.JsonSerializer.Serialize(registrations, new System.Text.Json.JsonSerializerOptions
+        {
+            WriteIndented = true
+        });
+        var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+        var fileName = $"registrations_backup_{DateTime.UtcNow:yyyy-MM-dd_HHmmss}.json";
+        return File(bytes, "application/json", fileName);
+    }
+
+    /// <summary>
+    /// Import registrations from JSON backup.
+    /// </summary>
+    [HttpPost("import")]
+    [ProducesResponseType(typeof(ApiResponse<int>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ImportData([FromBody] List<RegistrantDto> registrations, CancellationToken cancellationToken)
+    {
+        if (registrations == null || registrations.Count == 0)
+        {
+            return BadRequest(ApiResponse.FailureResponse("No registrations provided"));
+        }
+
+        var importedCount = await _mediator.Send(new ImportRegistrationsCommand(registrations), cancellationToken);
+        return Ok(ApiResponse<int>.SuccessResponse(importedCount, $"Successfully imported {importedCount} registrations"));
     }
 }
