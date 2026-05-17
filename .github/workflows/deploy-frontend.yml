@@ -1,0 +1,43 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/Frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: src/Frontend/package-lock.json
+
+    - name: Install dependencies
+      working-directory: src/Frontend
+      run: npm ci
+
+    - name: Build
+      working-directory: src/Frontend
+      run: npm run build
+      env:
+        VITE_API_URL: ${{ vars.VITE_API_URL || '/api' }}
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-dist
+        path: src/Frontend/dist
+
+  # Deploy to Vercel (recommended)
+  # Vercel will auto-detect and deploy from GitHub
+  # Just connect your repo at vercel.com/new

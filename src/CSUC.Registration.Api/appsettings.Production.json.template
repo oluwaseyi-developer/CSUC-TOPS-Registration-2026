@@ -1,0 +1,28 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "${DATABASE_URL}"
+  },
+  "Cors": {
+    "AllowedOrigins": [
+      "${FRONTEND_URL}"
+    ]
+  },
+  "Jwt": {
+    "Key": "${JWT_SECRET_KEY}",
+    "Issuer": "CSUC.Registration.Api",
+    "Audience": "CSUC.Registration.Frontend",
+    "ExpiryHours": 8
+  },
+  "Admin": {
+    "Username": "${ADMIN_USERNAME}",
+    "PasswordHash": "${ADMIN_PASSWORD_HASH}"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.EntityFrameworkCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
