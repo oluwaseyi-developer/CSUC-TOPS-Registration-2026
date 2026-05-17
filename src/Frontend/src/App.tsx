@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { HomePage, AdminPage, LoginPage } from '@/pages';
 import { ProtectedRoute } from '@/components/auth';
+import { registrationApi } from '@/api';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -11,6 +12,17 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
     },
   },
+});
+
+// Wake up the server immediately when the app loads (reduces cold start delay)
+// This fires a request to warm up the Render backend which sleeps after 15 min
+registrationApi.wakeUp();
+
+// Prefetch form options on app load for faster form display
+queryClient.prefetchQuery({
+  queryKey: ['formOptions'],
+  queryFn: registrationApi.getFormOptions,
+  staleTime: Infinity,
 });
 
 function App() {
@@ -35,7 +47,7 @@ function App() {
         toastOptions={{
           duration: 4000,
           style: {
-            background: 'rgba(30, 58, 138, 0.95)',
+            background: 'rgba(64, 10, 26, 0.95)',
             color: '#fff',
             backdropFilter: 'blur(10px)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -43,7 +55,7 @@ function App() {
           success: {
             iconTheme: {
               primary: '#fbbf24',
-              secondary: '#1e3a8a',
+              secondary: '#400a1a',
             },
           },
           error: {

@@ -78,6 +78,15 @@ export const authApi = {
 
 // Registration endpoints
 export const registrationApi = {
+  // Wake up the server (call on app load to reduce cold start delay)
+  wakeUp: async (): Promise<void> => {
+    try {
+      await api.get('/registration/options', { timeout: 60000 });
+    } catch {
+      // Ignore errors - this is just to warm up the server
+    }
+  },
+
   getFormOptions: async (): Promise<FormOptions> => {
     const { data } = await api.get<ApiResponse<FormOptions>>('/registration/options');
     return data.data!;

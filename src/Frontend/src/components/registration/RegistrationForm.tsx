@@ -254,8 +254,13 @@ export function RegistrationForm() {
           loading={mutation.isPending}
           className="w-full md:w-auto"
         >
-          Complete Registration
+          {mutation.isPending ? 'Submitting Registration...' : 'Complete Registration'}
         </Button>
+        {mutation.isPending && (
+          <p className="text-white/60 text-sm mt-2 text-center md:text-left">
+            Please wait, this may take a moment...
+          </p>
+        )}
       </div>
     </motion.form>
   );
