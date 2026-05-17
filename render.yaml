@@ -2,22 +2,47 @@
 # Deploy to Render with PostgreSQL
 
 services:
+  # Backend API
   - type: web
     name: csuc-registration-api
     env: docker
     dockerfilePath: ./Dockerfile
+    plan: free
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: ASPNETCORE_URLS
-        value: http://+:80
+        value: http://+:8080
       - key: ConnectionStrings__DefaultConnection
         fromDatabase:
           name: csuc-registration-db
           property: connectionString
+      - key: Jwt__Key
+        generateValue: true
+      - key: Jwt__Issuer
+        value: CSUC.Registration.Api
+      - key: Jwt__Audience
+        value: CSUC.Registration.Frontend
+      - key: Jwt__ExpiryHours
+        value: "8"
       - key: Cors__AllowedOrigins__0
-        sync: false
-    healthCheckPath: /health
+        sync: false  # Set manually to your frontend URL after deployment
+    healthCheckPath: /api/registration/options
+
+  # Frontend Static Site
+  - type: web
+    name: csuc-registration-frontend
+    env: static
+    buildCommand: cd src/Frontend && npm ci && npm run build
+    staticPublishPath: src/Frontend/dist
+    plan: free
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false  # Set manually to your backend URL after deployment
 
 databases:
   - name: csuc-registration-db
